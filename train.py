@@ -60,6 +60,12 @@ def setup(args):
     config = CONFIGS[args.model_type]
 
     num_classes = 10 if args.dataset == "cifar10" else 100
+    if args.dataset == "cifar10":
+        num_classes = 10
+    elif args.dataset == "bees_ants":
+        num_classes = 2
+    else:
+        num_classes = 100
 
     model = VisionTransformer(config, args.img_size, zero_head=True, num_classes=num_classes)
     model.load_from(np.load(args.pretrained_dir))
@@ -244,7 +250,7 @@ def main():
     # Required parameters
     parser.add_argument("--name", required=True,
                         help="Name of this run. Used for monitoring.")
-    parser.add_argument("--dataset", choices=["cifar10", "cifar100"], default="cifar10",
+    parser.add_argument("--dataset", choices=["cifar10", "cifar100","ants_bees"], default="cifar10",
                         help="Which downstream task.")
     parser.add_argument("--model_type", choices=["ViT-B_16", "ViT-B_32", "ViT-L_16",
                                                  "ViT-L_32", "ViT-H_14", "R50-ViT-B_16"],
@@ -319,6 +325,9 @@ def main():
 
     # Model & Tokenizer Setup
     args, model = setup(args)
+    print("printing args")
+    for arg in vars(args):
+        print("{:<30} {}".format(arg, getattr(args, arg)))
 
     # Training
     train(args, model)
